@@ -1,4 +1,4 @@
-# CLI Tools: ftree & flutter-cleanup
+# CLI Tools: ftree, flutter-cleanup & caldetag
 
 Both installers are **dynamic**: they scan the `scripts/` folder, and install
 every file that starts with a Bash shebang (`#!/bin/bash` or `#!/usr/bin/env bash`)
@@ -12,7 +12,8 @@ the installer to pick it up — no editing the installer required.
 cli-tools/
 ├── scripts/
 │   ├── ftree              # the actual tree-printing script
-│   └── flutter-cleanup    # the actual Flutter cleanup script
+│   ├── flutter-cleanup    # the actual Flutter cleanup script
+│   └── caldetag           # removes device-calendar events tagged by an app
 ├── install-macos-linux.sh
 ├── install-windows.ps1
 └── README.md
@@ -33,6 +34,7 @@ folder to your PATH automatically. Open a new terminal, then:
 ```bash
 ftree .
 flutter-cleanup ~/Projects
+caldetag TeacherApp --dry-run
 ```
 
 ## Windows
@@ -43,18 +45,24 @@ auto-detects whichever you have.
 
 1. Right-click `install-windows.ps1` → **Run with PowerShell**
    (or in PowerShell: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` then `.\install-windows.ps1`)
-2. It copies the scripts and creates `ftree.cmd` / `flutter-cleanup.cmd` shims in `%USERPROFILE%\bin`,
-   and adds that folder to your user PATH.
+2. It copies the scripts and creates `ftree.cmd` / `flutter-cleanup.cmd` / `caldetag.cmd` shims in
+   `%USERPROFILE%\bin`, and adds that folder to your user PATH.
 3. Open a **new** terminal (cmd, PowerShell, or Windows Terminal), then:
 
 ```
 ftree .
 flutter-cleanup C:\Projects
+caldetag TeacherApp --dry-run
 ```
 
 ## Notes
 
 - `flutter-cleanup` is destructive (it deletes build artifacts) — it always asks for
   confirmation before touching anything.
+- `caldetag <tag>` deletes every device-calendar event whose description contains
+  `[<tag>:...]` — the convention an app uses to mark events it created. Requires `adb`
+  and a connected device/emulator with calendar read access from the `adb shell` user.
+  Always `--dry-run` first; deletion is immediate and not undoable. Pass `-s <serial>`
+  to target a specific device when more than one is connected.
 - Re-running either installer overwrites the previously installed copies, so pulling
   updated scripts into this folder and re-running the installer is how you upgrade.
